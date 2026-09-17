@@ -24,13 +24,26 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Checkout Asteroids source
+        uses: actions/checkout@v4
+        with:
+          repository: nazym1234/asteroids-game
+          ref: ad1dfcd6a2a19b4acbe0d0bea77f01b088db4cf3
+          path: _game
+      - name: Prepare browser build
+        run: |
+          python3 scripts/prepare-game.py
+          rustup target add wasm32-unknown-unknown
+          cargo build --manifest-path _game/Cargo.toml --release --target wasm32-unknown-unknown
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Prepare public files
         run: |
           mkdir -p _site
           cp index.html merci.html style.css app.js .nojekyll _site/
-          cp -R assets _site/
+          cp -R assets asteroids _site/
+          cp _game/target/wasm32-unknown-unknown/release/asteroid.wasm _site/asteroids/
+          cp -R _game/notreimage _game/musique _site/asteroids/
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
