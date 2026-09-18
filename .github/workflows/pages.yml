@@ -31,6 +31,8 @@ jobs:
           ref: ad1dfcd6a2a19b4acbe0d0bea77f01b088db4cf3
           path: _game
       - name: Prepare browser build
+        env:
+          RUSTFLAGS: "-C link-arg=--import-undefined"
         run: |
           python3 scripts/prepare-game.py
           rustup target add wasm32-unknown-unknown
