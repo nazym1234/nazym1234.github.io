@@ -1,7 +1,25 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Asteroids</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}canvas{width:100%;height:100%;display:block;outline:none}</style></head><body><canvas id="glcanvas" tabindex="0" aria-label="Asteroids : touches 1, 2, 3, flèches et espace"></canvas><script src="mq_js_bundle.js"></script><script>
 window.addEventListener('error',()=>parent.postMessage('game-error',location.origin));
 window.addEventListener('unhandledrejection',()=>parent.postMessage('game-error',location.origin));
-miniquad_add_plugin({register_plugin:function(imports){imports.env.portfolio_ready=function(){parent.postMessage('game-ready',location.origin);};}});
-load('asteroid.wasm');
+miniquad_add_plugin({name:'portfolio',version:1,register_plugin:function(imports){imports.env.portfolio_ready=function(){parent.postMessage('game-ready',location.origin);};}});
+// Report loading failures to the portfolio instead of leaving a blank screen.
+(async()=>{
+ try {
+  if (!canvas.getContext('webgl')) throw new Error('WebGL indisponible');
+  const response=await fetch('asteroid.wasm');
+  if(!response.ok) throw new Error('HTTP '+response.status);
+  register_plugins(plugins);
+  const module=await WebAssembly.compile(await response.arrayBuffer());
+  add_missing_functions_stabs(module);
+  const instance=await WebAssembly.instantiate(module,importObject);
+  wasm_memory=instance.exports.memory;
+  wasm_exports=instance.exports;
+  init_plugins(plugins);
+  instance.exports.main();
+ } catch(error) {
+  console.error(error);
+  parent.postMessage('game-error',location.origin);
+ }
+})();
 document.querySelector('canvas').focus();
 </script></body></html>

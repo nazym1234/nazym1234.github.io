@@ -46,6 +46,12 @@ jobs:
           cp -R assets asteroids _site/
           cp _game/target/wasm32-unknown-unknown/release/asteroid.wasm _site/asteroids/
           cp -R _game/notreimage _game/musique _site/asteroids/
+      - name: Test browser game
+        run: |
+          npm install --prefix /tmp/asteroids-test playwright@1.58.2
+          /tmp/asteroids-test/node_modules/.bin/playwright install --with-deps chromium
+          python3 -m http.server 8000 --directory _site > /tmp/asteroids-server.log 2>&1 &
+          NODE_PATH=/tmp/asteroids-test/node_modules node scripts/test-game.cjs
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
