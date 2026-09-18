@@ -1,0 +1,41 @@
+const {chromium}=require('playwright');
+const assert=require('node:assert/strict');
+(async()=>{
+ const browser=await chromium.launch();
+ try {
+  const page=await browser.newPage({viewport:{width:1280,height:900}}),errors=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  page.on('response',r=>{if(r.status()>=400)errors.push(r.status()+' '+r.url());});
+  await page.goto('http://127.0.0.1:8000/flappy/');
+  await page.getByRole('status').filter({hasText:'Prêt à jouer.'}).waitFor();
+  await page.getByRole('button',{name:'Jouer ↗',exact:true}).click();
+  const canvas=page.locator('canvas');
+  await canvas.press('d');await page.waitForTimeout(180);
+  assert(Number(await canvas.getAttribute('data-x'))>10,'D advances the OCaml bird');
+  const y=Number(await canvas.getAttribute('data-y'));
+  await canvas.press('z');await page.waitForTimeout(180);
+  assert(Number(await canvas.getAttribute('data-y'))>y,'Z jumps');
+  await page.getByRole('button',{name:'Pause',exact:true}).click();
+  const paused=await canvas.getAttribute('data-y');await page.waitForTimeout(200);
+  assert.equal(await canvas.getAttribute('data-y'),paused,'Pause stops physics');
+  assert((await canvas.screenshot()).length>10000,'Retro course renders');
+  await page.getByRole('button',{name:'Recommencer',exact:true}).click();
+  assert.equal(Number(await canvas.getAttribute('data-x')),10,'Restart resets distance');
+  await page.getByRole('status').filter({hasText:'Collision'}).waitFor({timeout:5000});
+  assert.equal(await canvas.getAttribute('data-state'),'over','Ground collision ends game');
+  await page.getByRole('button',{name:'Rejouer ↗',exact:true}).click();
+  await page.getByRole('button',{name:'Avancer →',exact:true}).click();
+  await page.getByRole('button',{name:'Sauter ↑',exact:true}).click();
+  await page.waitForTimeout(180);
+  assert(Number(await canvas.getAttribute('data-x'))>10,'On-screen advance works');
+  assert(Number(await canvas.getAttribute('data-y'))>15,'On-screen jump works');
+  assert.deepEqual(errors,[]);
+  await page.goto('http://127.0.0.1:8000/#projets');
+  assert.equal(await page.locator('.hero a[href="asteroids/"]').count(),0,'No home game CTA');
+  await page.getByRole('link',{name:'🎮 Jouer à Flappy OCaml',exact:true}).waitFor();
+  await page.getByRole('link',{name:'🎮 Jouer à Asteroids',exact:true}).waitFor();
+  const asteroid=page.getByRole('article').filter({hasText:'Asteroids · Rust'});
+  assert(!(await asteroid.innerText()).includes('collectif'));
+  console.log('PASS: OCaml loads and renders, keyboard and on-screen controls, pause, collision, replay; portfolio buttons and copy checked.');
+ }finally{await browser.close();}
+})().catch(e=>{console.error(e);process.exitCode=1;});
