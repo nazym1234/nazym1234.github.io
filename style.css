@@ -10,3 +10,18 @@
 .arcade-invite{display:flex;align-items:center;gap:18px;padding:19px 21px;border:1px solid #d6bf7a50;background:linear-gradient(110deg,#173b2c88,#0b251d);border-radius:8px;max-width:490px;transition:transform .2s,border-color .2s}.arcade-invite:hover{transform:translateY(-3px);border-color:var(--gold)}
 .arcade-icon{display:grid;place-items:center;flex-shrink:0;width:46px;height:46px;border:1px solid #d6bf7a66;border-radius:50%;font-size:28px;color:var(--gold)}
 .arcade-invite small{display:block;font:9px var(--mono);letter-spacing:1.5px;color:var(--gold)}.arcade-invite strong{display:block;font:28px var(--serif);color:var(--text);margin:3px 0}.arcade-invite>span:nth-child(2)>span{display:block;font-size:12px;color:var(--muted)}.arcade-cta{margin-left:auto;font-size:14px;color:var(--gold);white-space:nowrap}.project .primary{justify-content:center;margin-top:15px}.project .explore-project{margin-top:15px}@media(max-width:480px){.arcade-invite{padding:16px 14px;gap:12px}.arcade-icon{width:36px;height:36px}.arcade-invite>span:nth-child(2)>span{font-size:11px}}
+
+/* Clear hierarchy: two main actions, then contact and professional profiles. */
+.hero-cta-group{max-width:560px;margin-top:30px}
+.hero-main-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hero-main-actions .primary{min-height:56px;padding:14px 16px;gap:12px;text-align:center;line-height:1.4}
+.hero-main-actions svg{flex-shrink:0;width:20px;height:20px}
+.hero-main-actions small{font-size:11px;font-weight:400;opacity:.8}
+.hero-connect{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.hero-connect a{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);line-height:1.4;min-height:40px}
+.hero-connect a:hover{color:var(--gold)}
+.hero-connect svg{width:20px;height:20px;flex-shrink:0}
+.hero-connect .hero-contact{color:var(--gold)}
+.hero-profile-links{display:flex;align-items:center;gap:22px}
+.hero-copy .hero-meta{display:flex;align-items:center;flex-wrap:wrap;row-gap:4px;margin-top:20px}
+@media(max-width:380px){.hero-main-actions{grid-template-columns:1fr}.hero-connect{gap:8px}.hero-profile-links{gap:16px}}
